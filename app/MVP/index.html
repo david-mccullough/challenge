@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 
 <body>
@@ -18,13 +19,13 @@
   <div class="rating-box mt-1">
     <h1 class="rating-average">3.8</h1>
     <div class="rating-stars-container">
-      <div class="star full-star grow"></div>
-      <div class="star half-star grow"></div>
-      <div class="star empty-star grow"></div>
-      <div class="star empty-star grow"></div>
-      <div class="star empty-star grow"></div>
+      <div class="star full-star"></div>
+      <div class="star half-star"></div>
+      <div class="star empty-star"></div>
+      <div class="star empty-star"></div>
+      <div class="star empty-star"></div>
     </div>
-    <button id="btn-add-review">Add review</button>
+    <button id="btn-add-review" onclick="openReviewForm()">Add review</button>
   </div>
 
   <div class="separator"></div>
@@ -63,6 +64,54 @@
     </div>
   </div>
 
+  <div id="modal" style="display: none;">
+    <a class="overlay" onclick="closeReviewForm()"></a>
+    <form class="form-container">
+      <h1>What's your rating?</h1>
+      <p>Rating</p>
+      <div class="rating-stars-container">
+        <a class="star full-star grow"></a>
+        <a class="star half-star grow"></a>
+        <a class="star empty-star grow"></a>
+        <a class="star empty-star grow"></a>
+        <a class="star empty-star grow"></a>
+      </div>
+      <p for="review-text">Review</label>
+        <input type="text" id="review-text" placeholder="Start typing..." name="review-text" required>
+        <button type="submit" onclick="closeReviewForm">Submit Review</button>
+    </form>
+  </div>
+
+
 </body>
+
+<script>
+  // Key listening from: https://stackoverflow.com/a/43558844
+  var inputEnabled = false;
+  var pressedKey = {}
+  window.addEventListener('keydown', function(e) {
+    if (inputEnabled) {
+      focusReviewInput()
+    }
+    pressedKey[e.keyCode || e.which] = true;
+  }, true);
+  window.addEventListener('keyup', function(e) {
+    pressedKey[e.keyCode || e.which] = false;
+  }, true);
+
+  function openReviewForm() {
+    inputEnabled = true;
+    $("#modal").fadeIn(125);
+  }
+
+  function closeReviewForm() {
+    inputEnabled = false;
+    $("#modal").fadeOut(125);
+  }
+
+  function focusReviewInput() {
+    document.getElementById("review-text").focus();
+  }
+</script>
 
 </html>
