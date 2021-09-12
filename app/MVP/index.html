@@ -30,39 +30,8 @@
 
   <div class="separator"></div>
 
-  <div id="reviews-box">
-    <h2>Reviews</h2>
-    <div class="review">
-      <div class="rating-stars-container">
-        <div class="star full-star"></div>
-        <div class="star full-star"></div>
-        <div class="star full-star"></div>
-        <div class="star full-star"></div>
-        <div class="star half-star"></div>
-      </div>
-      <p><span class="rating">4.5</span>, book was full of fluff</p>
-    </div>
-    <div class="review">
-      <div class="rating-stars-container">
-        <div class="star full-star"></div>
-        <div class="star full-star"></div>
-        <div class="star full-star"></div>
-        <div class="star full-star"></div>
-        <div class="star half-star"></div>
-      </div>
-      <p><span class="rating">4.5</span>, book was full of fluff</p>
-    </div>
-    <div class="review">
-      <div class="rating-stars-container">
-        <div class="star full-star"></div>
-        <div class="star full-star"></div>
-        <div class="star full-star"></div>
-        <div class="star full-star"></div>
-        <div class="star half-star"></div>
-      </div>
-      <p><span class="rating">4.5</span>, book was full of fluff</p>
-    </div>
-  </div>
+  <h2>Reviews</h2>
+  <div id="reviews-box"></div>
 
   <div id="modal" style="display: none;">
     <a class="overlay" onclick="closeReviewForm()"></a>
@@ -86,6 +55,29 @@
 </body>
 
 <script>
+  const reviewTemplate = ({
+    rating,
+    review
+  }) => `
+  <div class="review">
+      <div class="rating-stars-container">
+        <div class="star full-star"></div>
+        <div class="star full-star"></div>
+        <div class="star full-star"></div>
+        <div class="star full-star"></div>
+        <div class="star half-star"></div>
+      </div>
+      <p><span class="rating">${rating}</span>, ${review}</p>
+    </div>
+`;
+
+  $(document).ready(async function() {
+    let serviceUrl = 'http://' + window.location.hostname + '/api/reviews';
+
+    let reviews = await fetch(serviceUrl).then(response => response.json());
+    $('#reviews-box').html(reviews.map(reviewTemplate).join(''));
+  });
+
   // Key listening from: https://stackoverflow.com/a/43558844
   var inputEnabled = false;
   var pressedKey = {}
