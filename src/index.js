@@ -5,9 +5,9 @@ const reviews = require('./controller.js')
 
 const app = express();
 const port = process.env.PORT || 80;
-const mvpPath = './app/MVP/';
 
-app.use(express.static(__dirname + '/app/MVP/public'));
+console.log(__dirname)
+app.use(express.static(__dirname + '/../public'));
 app.use(
     express.urlencoded({
         extended: true
@@ -16,7 +16,7 @@ app.use(
 app.use(express.json());
 
 app.get('/', async function(req, res) {
-    res.send(await readFile(mvpPath + 'index.html', 'utf8'));
+    res.send(await readFile('./index.html', 'utf8'));
 });
 
 // API
