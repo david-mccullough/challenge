@@ -228,7 +228,7 @@ a.overlay {
   font-size: 24px;
 }
 
-input[type=text] {
+textarea[type=text] {
   width: 100%;
   padding: 15px;
   margin: 5px 0 20px 0;
@@ -237,6 +237,8 @@ input[type=text] {
   font-size: 20px;
   padding: 16px 0;
   color: #454545;
+  resize: none;
+  font-family: "Roboto", sans-serif;
 }
 
 ::placeholder {
@@ -244,15 +246,15 @@ input[type=text] {
   opacity: 1;
 }
 
-:-ms-input-placeholder {
+:-ms-textarea-placeholder {
   color: #929292;
 }
 
-::-ms-input-placeholder {
+::-ms-textarea-placeholder {
   color: #929292;
 }
 
-input[type=text]:focus {
+textarea[type=text]:focus {
   outline: none;
   background-color: none;
 }
