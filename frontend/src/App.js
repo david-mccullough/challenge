@@ -1,20 +1,61 @@
+import React from "react";
+import reviewService from "./services/reviewService";
 import Review from "./components/Review";
+import ReviewForm from "./components/ReviewForm";
 
-function App() {
-  return (
-    <div className="App">
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      reviews: [],
+      averageRating: 0,
+      isReviewFormVisible: false,
+    };
+
+    this.toggleReviewForm = this.toggleReviewForm.bind(this);
+    this.submitCallback = this.submitCallback.bind(this);
+  }
+
+  componentDidMount() {
+    this.refreshReviews();
+  }
+
+  async refreshReviews() {
+    let reviews = await reviewService.getAll().then((resp) => resp.json());
+
+    // calculate average
+    let average = reviews.reduce((a, b) => a + b.rating, 0) / reviews.length;
+    let roundedAverage = (Math.round(average * 10) / 10).toFixed(1);
+
+    this.setState({ averageRating: roundedAverage, reviews: reviews });
+  }
+
+  toggleReviewForm() {
+    this.setState({ isReviewFormVisible: !this.state.isReviewFormVisible });
+  }
+
+  submitCallback() {
+    this.refreshReviews();
+    this.toggleReviewForm();
+  }
+
+  render() {
+    return (
       <header className="App-header">
         <h1>The Minimalist Entrepreneur</h1>
 
         <div className="rating-box mt-1">
           <h1 id="rating-average" className="rating-average">
-            0.0
+            {this.state.averageRating}
           </h1>
           <div
             id="rating-average-stars"
             className="rating-stars-container"
           ></div>
-          <button id="btn-add-review" onClick="openReviewForm()">
+          <button
+            id="btn-add-review"
+            onClick={this.toggleReviewForm.bind(this)}
+          >
             Add review
           </button>
         </div>
@@ -23,39 +64,20 @@ function App() {
 
         <h2>Reviews</h2>
         <div id="reviews-box">
-          <Review rating={1} content="wow."></Review>
+          {this.state.reviews.map((r) => (
+            <Review content={r.content} rating={r.rating} key={r._id} />
+          ))}
         </div>
-
-        <div id="modal" style={{ display: "none" }}>
-          <a className="overlay" onClick="closeReviewForm()"></a>
-          <div className="form-container">
-            <h1>What's your rating?</h1>
-            <p>Rating</p>
-            <div
-              id="new-rating-stars-container"
-              className="rating-stars-container"
-            >
-              <a className="star empty-star grow" onClick="setRating(1)"></a>
-              <a className="star empty-star grow" onClick="setRating(2)"></a>
-              <a className="star empty-star grow" onClick="setRating(3)"></a>
-              <a className="star empty-star grow" onClick="setRating(4)"></a>
-              <a className="star empty-star grow" onClick="setRating(5)"></a>
-            </div>
-            <p htmlFor="review-text">Review</p>
-            <textarea
-              type="text"
-              id="review-content"
-              placeholder="Start typing..."
-              name="content"
-              required
-              maxLength="1000"
-            ></textarea>
-            <button onClick="submitReview()">Submit Review</button>
-          </div>
-        </div>
+        {
+          <ReviewForm
+            isToggled={this.state.isReviewFormVisible}
+            submitCallback={this.submitCallback}
+            overlayClicked={this.toggleReviewForm}
+          />
+        }
       </header>
-    </div>
-  );
+    );
+  }
 }
 
 export default App;
