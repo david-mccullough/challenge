@@ -1,31 +1,42 @@
 const express = require('express');
 const { readFile } = require('fs').promises;
+const db = require('./repository.js')
+const reviews = require('./controller.js')
 
 const app = express();
 const port = process.env.PORT || 80;
 const mvpPath = './app/MVP/';
 
 app.use(express.static(__dirname + '/app/MVP/public'));
+app.use(
+    express.urlencoded({
+        extended: true
+    })
+);
+app.use(express.json());
 
-// Routes
 app.get('/', async function(req, res) {
     res.send(await readFile(mvpPath + 'index.html', 'utf8'));
 });
 
+// API
 app.get('/api/reviews/', async function(req, res) {
-    res.send([
-        { rating: 5, review: 'amazing' },
-        { rating: 2, review: 'not the best' },
-        { rating: 4, review: 'Dolore vero dolorum unde nemo commodi a modi iste. Tempore autem voluptas porro officia veniam aliquam. Ducimus magnam consequatur voluptates veritatis architecto voluptatem temporibus. Id quidem ipsam commodi aut. Modi rerum ut tenetur. Quibusdam ipsam laborum est labore sapiente.' }
-    ]);
+    reviews.findAll(req.body, res);
 });
 
 app.post('/api/reviews/', function(req, res) {
-    //review.create(req.body, res);
+    reviews.create(req.body, res);
 });
 
-app.delete('/api/reviews/:id/', function(req, res) {
-    //review.delete(req.params.id, res);
-});
+db.connect()
+    .then(() => {
+        console.log("Successfully connected to the db.");
+    })
+    .catch(err => {
+        console.error("Failed to connect to db.", err);
+        process.exit();
+    });
+
+process.on('exit', function() { db.close() });
 
 app.listen(port, () => console.log('Live on http://localhost:' + port));

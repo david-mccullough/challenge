@@ -17,14 +17,8 @@
   <h1>The Minimalist Entrepreneur</h1>
 
   <div class="rating-box mt-1">
-    <h1 class="rating-average">3.8</h1>
-    <div class="rating-stars-container">
-      <div class="star full-star"></div>
-      <div class="star half-star"></div>
-      <div class="star empty-star"></div>
-      <div class="star empty-star"></div>
-      <div class="star empty-star"></div>
-    </div>
+    <h1 id="rating-average" class="rating-average">0.0</h1>
+    <div id="rating-average-stars" class="rating-stars-container"></div>
     <button id="btn-add-review" onclick="openReviewForm()">Add review</button>
   </div>
 
@@ -57,25 +51,29 @@
 <script>
   const reviewTemplate = ({
     rating,
-    review
-  }) => `
-  <div class="review">
+    content
+  }) => 
+    `<div class="review">
       <div class="rating-stars-container">
-        <div class="star full-star"></div>
-        <div class="star full-star"></div>
-        <div class="star full-star"></div>
-        <div class="star full-star"></div>
-        <div class="star half-star"></div>
+        ${getStarsFromRating(rating)}       
       </div>
-      <p><span class="rating">${rating}</span>, ${review}</p>
+      <p><span class="rating">${rating}</span>, ${content}</p>
     </div>
 `;
 
   $(document).ready(async function() {
-    let serviceUrl = 'http://' + window.location.hostname + '/api/reviews';
-
+    const serviceUrl = 'http://' + window.location.hostname + '/api/reviews';
     let reviews = await fetch(serviceUrl).then(response => response.json());
+
+    // map reviews to html
     $('#reviews-box').html(reviews.map(reviewTemplate).join(''));
+
+    // calculate and render average
+    let average = reviews.reduce((a, b) => a + b.rating, 0) / reviews.length;
+    let roundedAverage = (Math.round(average * 10) / 10).toFixed(1);
+    
+    $('#rating-average').html(roundedAverage);
+    $("#rating-average-stars").html(getStarsFromRating(roundedAverage));
   });
 
   // Key listening from: https://stackoverflow.com/a/43558844
@@ -104,6 +102,17 @@
   function focusReviewInput() {
     document.getElementById("review-text").focus();
   }
+
+  function getStarsFromRating(rating)
+  {
+    let stars = [];
+    for (let i = 1; i <= 5; i++)    
+      stars.push(`<div class="star ${i <= Math.round(rating) ? "full-star": "empty-star"}"></div>`)
+    
+    return stars.join('')
+  }
+
+     
 </script>
 
 </html>
