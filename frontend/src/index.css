@@ -64,7 +64,7 @@ h1 {
   font-weight: bold;
 }
 
-a.star:hover {
+.interactive.star:hover {
   cursor: pointer;
 }
 
@@ -253,12 +253,11 @@ a.overlay {
 
 textarea[type="text"] {
   width: 100%;
-  padding: 15px;
-  margin: 5px 0 20px 0;
+  padding: 0;
+  margin: 0 0 20px 0;
   border: none;
   background-color: none;
   font-size: 20px;
-  padding: 16px 0;
   color: #454545;
   resize: none;
   font-family: "Roboto", sans-serif;

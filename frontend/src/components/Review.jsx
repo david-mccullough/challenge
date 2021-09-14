@@ -1,24 +1,19 @@
 import React from "react";
 import Star from "./Star";
 
-const Review = (props) => {
+const Review = ({ rating, content }) => {
   return (
     <div className="review">
       <div className="rating-stars-container">
-        {getStarsFromRating(props.rating)}
+        {[1, 2, 3, 4, 5].map((i) => (
+          <Star rating={rating} index={i} key={i} />
+        ))}
       </div>
       <p>
-        <span className="rating">{props.rating}</span>, {props.content}
+        <span className="rating">{rating}</span>, {content}
       </p>
     </div>
   );
 };
-
-function getStarsFromRating(rating) {
-  let stars = [];
-  for (let i = 1; i <= 5; i++)
-    stars.push(<Star rating={rating} index={i} key={i} />);
-  return stars;
-}
 
 export default Review;

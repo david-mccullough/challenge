@@ -27,7 +27,10 @@ class App extends React.Component {
     let average = reviews.reduce((a, b) => a + b.rating, 0) / reviews.length;
     let roundedAverage = (Math.round(average * 10) / 10).toFixed(1);
 
-    this.setState({ averageRating: roundedAverage, reviews: reviews });
+    this.setState({
+      averageRating: isNaN(roundedAverage) ? "N/A" : roundedAverage,
+      reviews: reviews,
+    });
   }
 
   toggleReviewForm() {

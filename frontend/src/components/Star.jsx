@@ -3,10 +3,10 @@ import React from "react";
 const Star = (props) => {
   return (
     <div
-      className={
-        "star " +
-        (props.index <= Math.round(props.rating) ? "full-star" : "empty-star")
-      }
+      className={`star ${props.onClick ? "interactive grow" : ""} ${
+        props.index <= Math.round(props.rating) ? "full-star" : "empty-star"
+      }`}
+      {...props}
     ></div>
   );
 };
