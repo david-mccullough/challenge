@@ -1,10 +1,11 @@
+require("dotenv").config({ path: "../../.env" });
 const express = require("express");
 const db = require("./repository.js");
 const reviews = require("./controller.js");
 const ws = require("ws");
 
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 5000;
 
 app.use(
   express.urlencoded({
