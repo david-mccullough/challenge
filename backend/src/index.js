@@ -1,6 +1,7 @@
 const express = require("express");
 const db = require("./repository.js");
 const reviews = require("./controller.js");
+const ws = require("ws");
 
 const app = express();
 const port = 3001;
@@ -12,13 +13,30 @@ app.use(
 );
 app.use(express.json());
 
+const server = require("http").createServer(app);
+
+// WS
+const wss = new ws.Server({ server });
+let sockets = [];
+wss.on("connection", function (socket) {
+  sockets.push(socket);
+
+  socket.on("close", function () {
+    sockets = sockets.filter((s) => s !== socket);
+  });
+});
+
 // API
 app.get("/api/reviews/", async function (req, res) {
   reviews.findAll(req.body, res);
 });
 
-app.post("/api/reviews/", function (req, res) {
-  reviews.create(req.body, res);
+app.post("/api/reviews/", async function (req, res) {
+  reviews.create(req.body, res).then((review) => {
+    sockets.forEach(function each(client) {
+      client.send(JSON.stringify(review));
+    });
+  });
 });
 
 db.connect()
@@ -34,4 +52,4 @@ process.on("exit", function () {
   db.close();
 });
 
-app.listen(port, () => console.log("Live on http://localhost:" + port));
+server.listen(port, () => console.log("Live on http://localhost:" + port));
