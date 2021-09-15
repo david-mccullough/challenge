@@ -42,8 +42,10 @@ const ReviewForm = ({ isToggled, submitCallback, overlayClicked }) => {
         <div id="new-rating-stars-container" className="rating-stars-container">
           {[1, 2, 3, 4, 5].map((i) => (
             <Star
-              onClick={() => setRating(i)}
-              onMouseOver={() => setHighlightRating(i)}
+              onClick={(e) => setRating(i + (isMouseOnLeftSide(e) ? -0.5 : 0))}
+              onMouseMove={(e) =>
+                setHighlightRating(i + (isMouseOnLeftSide(e) ? -0.5 : 0))
+              }
               onMouseLeave={() => setHighlightRating(0)}
               rating={highlightRating || rating}
               index={i}
@@ -78,4 +80,10 @@ export default ReviewForm;
 function focuseTextArea(e) {
   if (e.keyCode && e.keyCode !== 13)
     document.getElementById("review-content").focus();
+}
+
+function isMouseOnLeftSide(e) {
+  let rect = e.currentTarget.getBoundingClientRect();
+  let midpoint = (rect.x + rect.right) / 2;
+  return e.pageX - midpoint < 0;
 }

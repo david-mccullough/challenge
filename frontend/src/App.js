@@ -2,6 +2,7 @@ import React from "react";
 import reviewService from "./services/reviewService";
 import Review from "./components/Review";
 import ReviewForm from "./components/ReviewForm";
+import Star from "./components/Star";
 
 class App extends React.Component {
   constructor(props) {
@@ -17,15 +18,8 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    const socket = new WebSocket(
-      "wss://" + window.location.hostname + ":" + window.location.port
-    );
-
-    socket.onmessage = ({ data }) => {
-      console.log(JSON.parse(data));
-      this.appendReview(JSON.parse(data));
-    };
     this.refreshReviews();
+    this.initWebSocket();
   }
 
   async refreshReviews() {
@@ -35,6 +29,31 @@ class App extends React.Component {
       averageRating: this.calculateAverageRating(reviews),
       reviews: reviews,
     });
+  }
+
+  initWebSocket() {
+    try {
+      var socket;
+      socket = new WebSocket(
+        "wss://" + window.location.hostname + ":" + window.location.port
+      );
+      socket.onopen = () =>
+        (socket.onmessage = ({ data }) => {
+          this.appendReview(JSON.parse(data));
+        });
+
+      socket.onerror = () => {
+        socket = new WebSocket(
+          "ws://" + window.location.hostname + ":" + window.location.port
+        );
+        socket.onopen = () =>
+          (socket.onmessage = ({ data }) => {
+            this.appendReview(JSON.parse(data));
+          });
+      };
+    } catch (err) {
+      console.error("Failed to establish web socket connection.", err);
+    }
   }
 
   appendReview(review) {
@@ -69,10 +88,11 @@ class App extends React.Component {
           <h1 id="rating-average" className="rating-average">
             {this.state.averageRating}
           </h1>
-          <div
-            id="rating-average-stars"
-            className="rating-stars-container"
-          ></div>
+          <div id="rating-average-stars" className="rating-stars-container">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <Star rating={this.state.averageRating} index={i} key={i}></Star>
+            ))}
+          </div>
           <button
             id="btn-add-review"
             onClick={this.toggleReviewForm.bind(this)}

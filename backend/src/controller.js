@@ -12,16 +12,20 @@ exports.create = async (body, res) => {
       !body.rating ||
       body.rating < 0 ||
       body.rating > 5 ||
-      !isInt(body.rating)
+      typeof body.rating !== "number"
     ) {
       res
         .status(400)
-        .send({ message: "Rating must an integer be between 1 and 5." });
+        .send({ message: "Rating must be number between 1 and 5." });
       return;
     }
 
+    let roundedToHalf = Number.parseFloat(
+      (Math.round(body.rating * 2) / 2).toFixed(1)
+    );
+
     const review = {
-      rating: body.rating,
+      rating: roundedToHalf,
       content: body.content,
       date: new Date().toISOString(),
     };
@@ -59,8 +63,3 @@ exports.findAll = async (body, res) => {
     });
   }
 };
-
-function isInt(value) {
-  var x = parseFloat(value);
-  return !isNaN(value) && (x | 0) === x;
-}
