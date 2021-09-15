@@ -3,10 +3,15 @@ const express = require("express");
 const db = require("./repository.js");
 const reviews = require("./controller.js");
 const ws = require("ws");
+const { readFile } = require("fs").promises;
+const path = require("path");
 
 const app = express();
 const port = process.env.PORT || 5000;
 
+let staticFilesPath = path.join(__dirname, "../../frontend/build");
+
+app.use(express.static(staticFilesPath));
 app.use(
   express.urlencoded({
     extended: true,
@@ -38,6 +43,10 @@ app.post("/api/reviews/", async function (req, res) {
       client.send(JSON.stringify(review));
     });
   });
+});
+
+app.get("*", async function (req, res) {
+  res.send(await readFile(staticFilesPath + "/index.html", "utf8"));
 });
 
 db.connect()

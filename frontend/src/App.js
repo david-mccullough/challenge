@@ -17,7 +17,9 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    const socket = new WebSocket("ws://" + window.location.hostname + ":5000");
+    const socket = new WebSocket(
+      "wss://" + window.location.hostname + ":" + window.location.port
+    );
 
     socket.onmessage = ({ data }) => {
       console.log(JSON.parse(data));
